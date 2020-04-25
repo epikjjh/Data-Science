@@ -145,6 +145,8 @@ class DecisionTree:
 
         # Build node & choose attribute
         node = self._build_node(data_set)
+        # For post pruning
+        node.metric = self._majority_vote(data_set) 
         # Choose proper branch by using gini index -> binary tree
         for branch in self._choose_branch(data_set, node.attribute):
             #df_filtered = data_set[data_set[node.attribute].isin(branch)].drop(node.attribute, axis=1)
@@ -155,17 +157,6 @@ class DecisionTree:
             else:
                 major = self._majority_vote(data_set)
                 node.child[tuple(branch)] = TreeNode(None,True,major) 
-        '''
-        # Split data set
-        for atype in self.attribute_dict[node.attribute]:
-            df_filtered = data_set[data_set[node.attribute]==atype].drop(node.attribute, axis=1)
-            if len(df_filtered) > 0:
-                node.child[atype] = self._build_tree(df_filtered)
-            # There are no remaining tuples -> majority voting
-            else:
-                major = self._majority_vote(data_set)
-                node.child[atype] = TreeNode(None,True,major) 
-        '''
         return node
 
 
@@ -173,7 +164,6 @@ class DecisionTree:
     def _traverse_tree(self, tuple_data):
         node = self.root
         atype = tuple_data[node.attribute]
-        depth = 0
         while not node.isleaf:
             # Select branch
             for branch, nxt_node in node.child.items():
@@ -197,7 +187,7 @@ if __name__ == "__main__":
     train_file, test_file, output_file = sys.argv[1:]
     df_train = pd.read_csv(train_file, sep="\t")
     df_test = pd.read_csv(test_file, sep="\t")
-    dt = DecisionTree(df_train,1)
+    dt = DecisionTree(df_train,0)
     
     ret = dt.output(df_test)
     ret.to_csv(output_file, sep="\t")

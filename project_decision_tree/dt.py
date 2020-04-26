@@ -187,6 +187,8 @@ if __name__ == "__main__":
     train_file, test_file, output_file = sys.argv[1:]
     df_train = pd.read_csv(train_file, sep="\t")
     df_test = pd.read_csv(test_file, sep="\t")
+    # Attribute selection: information gain
+    # Branch selection: gini index
     dt = DecisionTree(df_train,0)
     
     ret = dt.output(df_test)

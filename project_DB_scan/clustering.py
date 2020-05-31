@@ -30,7 +30,6 @@ class Cluster:
         self._write_result()
 
 
-
     @staticmethod
     def _get_distance(x1, y1, x2, y2):
         return ((x1-x2)**2 + (y1-y2)**2)**(1/2)
@@ -63,17 +62,18 @@ class Cluster:
             self.visited.append(cpt)
             while len(queue)>0:
                 cur = queue.pop(0)
+                if cur not in self.core_pts:
+                    continue
                 for nxt in self.neighbors[cur]:
                     if nxt not in self.visited:
                         self.visited.append(nxt)
                         cluster.append(nxt)
-                        if nxt in self.core_pts:
-                            queue.append(nxt)
+                        queue.append(nxt)
 
             self.clusters.append(cluster)
 
         # Sort clusters
-        self.clusters = sorted(self.clusters, key=lambda x: len(x), reverse=True)
+        self.clusters.sort(key=len, reverse=True)
         # Select n clusters
         self.clusters = self.clusters[:self.n]
 
